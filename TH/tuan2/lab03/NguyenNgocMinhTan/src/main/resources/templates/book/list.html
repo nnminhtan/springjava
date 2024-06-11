@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book List</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <style>
+        .autocomplete-suggestions {
+            border: 1px solid #d4d4d4;
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            position: absolute;
+            z-index: 1000;
+        }
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .autocomplete-suggestion:hover {
+            background-color: #e9e9e9;
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="~{layout::header}"></th:block>
+<div class="container">
+    <h1>Search Books</h1>
+    <form action="/books/search" method="get">
+        <div style="position: relative;">
+            <label for="title">Book Title:</label>
+            <input type="text" id="title" name="title" onkeyup="autocomplete(event, 'title')">
+            <div id="title-suggestions" class="autocomplete-suggestions"></div>
+        </div>
+        <div style="position: relative;">
+            <label for="author">Author Name:</label>
+            <input type="text" id="author" name="author" onkeyup="autocomplete(event, 'author')">
+            <div id="author-suggestions" class="autocomplete-suggestions"></div>
+        </div>
+        <button type="submit">Search</button>
+    </form>
+    <br>
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.price}"></td>
+            <td th:text="${book.categoryName}"></td>
+            <td colspan="2">
+                <a class="btn btn-primary" th:href="@{/books/edit/{id}(id=${book.id})}">Edit</a>
+                <a class="btn btn-danger" th:href="@{/books/delete/{id}(id=${book.id})}" onclick="return confirm('Are you sure you want to delete this book?')">Delete</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<th:block th:replace="~{layout::footer}"></th:block>
+<script>
+    function autocomplete(event, type) {
+        let input = event.target;
+        let query = input.value;
+        console.log(`Autocomplete triggered for ${type} with query: ${query}`); // Debugging line
+
+        if (query.length < 3) {
+            document.getElementById(type + '-suggestions').innerHTML = '';
+            return;
+        }
+
+        fetch(`/books/autocomplete?query=${query}&type=${type}`)
+            .then(response => {
+                console.log(`Fetch response status: ${response.status}`); // Debugging line
+                return response.json();
+            })
+            .then(suggestions => {
+                console.log('Suggestions:', suggestions); // Debugging line
+                let suggestionsDiv = document.getElementById(type + '-suggestions');
+                suggestionsDiv.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    let div = document.createElement('div');
+                    div.classList.add('autocomplete-suggestion');
+                    div.textContent = suggestion;
+                    div.onclick = function() {
+                        input.value = suggestion;
+                        suggestionsDiv.innerHTML = '';
+                    };
+                    suggestionsDiv.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error fetching suggestions:', error)); // Debugging line
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("Document loaded"); // Debugging line
+    });
+</script>
+</body>
+</html>

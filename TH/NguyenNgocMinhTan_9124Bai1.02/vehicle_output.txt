@@ -1,0 +1,9 @@
+Cars:
+Car{seats=6, license=true, id='60AA-66666', year=2020, month=6}
+Car{seats=8, license=false, id='60AA-77877', year=2016, month=9}
+Car{seats=6, license=false, id='60AA-67589', year=2016, month=6}
+
+Trucks:
+Truck{weight=21, id='60AA-76451', year=2020, month=9}
+Truck{weight=8, id='60AA-59697', year=2024, month=3}
+Truck{weight=30, id='60AA-88888', year=2019, month=6}

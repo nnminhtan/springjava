@@ -5,6 +5,7 @@ import dingus.co.nnminhtan.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -45,26 +46,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
         return http
+                .csrf(x->x.ignoringRequestMatchers("/api/**"))
+//                .csrf(x->x.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register", "/error",
-                                "/books", "/cart", "/cart/**")
-                        .permitAll() // Cho phép truy cập không cần xác thực.
-                        .requestMatchers("/books/edit/**", "/books/add", "/books/delete")
+                        .requestMatchers("/css/**", "/js/**", "/",
+                                "/oauth/**", "/register", "/error")
+                        .permitAll()
+                        .requestMatchers("/books/edit/**",
+                                "/books/add", "/books/delete")
                         .hasAnyAuthority("ADMIN")
-//                        .requestMatchers("api/v1/books/edit/**", "api/v1/books/add", "api/v1/books/delete/**"
-//                                )
-//                        .hasAnyAuthority("ADMIN","1","admin")
-//                                // Chỉ cho phép ADMIN truy cập.
-//                            .requestMatchers("/api/v1/books")
-//                            .hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/books", "/cart", "/cart/**")
+                        .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/**")
-                        .permitAll() // API mở cho mọi người dùng.
+                        .hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/books/**")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/books/**")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/books/**")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/books/**")
+                        .hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()
-//                        .anyRequest("/public/**").permitAll() // Public endpoints
-//                        .anyRequest("/admin/**").hasRole("ADMIN") // Protected endpoints
-//                        .anyRequest().authenticated() // All other endpoints
-//                        .and()
-//                        .httpBasic()
                 ).logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")

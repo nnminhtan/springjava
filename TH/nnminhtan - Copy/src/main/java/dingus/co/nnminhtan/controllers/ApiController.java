@@ -1,15 +1,25 @@
 package dingus.co.nnminhtan.controllers;
 
+import dingus.co.nnminhtan.daos.Item;
+import dingus.co.nnminhtan.entities.Book;
 import dingus.co.nnminhtan.services.BookService;
 import dingus.co.nnminhtan.services.CategoryService;
 import dingus.co.nnminhtan.services.CartService;
 import dingus.co.nnminhtan.viewmodels.BookGetVm;
+import dingus.co.nnminhtan.viewmodels.BookUpdateVm;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -53,5 +63,29 @@ public class ApiController {
                 .stream()
                 .map(BookGetVm::from)
                 .toList());
+    }
+
+    @PutMapping("/books/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
+        updatedBook.setId(id);
+        bookService.updateBook(updatedBook);
+        return ResponseEntity.ok(updatedBook);
+    }
+    @PostMapping("/books")
+    public ResponseEntity<Book> addBook(@RequestBody Book addedBook) {
+        bookService.addBook(addedBook);
+        return ResponseEntity.ok(addedBook);
+    }
+    @PostMapping("/add-to-cart")
+    public String addToCart(HttpSession session,
+                            @RequestParam long id,
+                            @RequestParam String name,
+                            @RequestParam double price,
+                            @RequestParam(defaultValue = "1") int quantity)
+    {
+        var cart = cartService.getCart(session);
+        cart.addItems(new Item(id, name, price, quantity));
+        cartService.updateCart(session, cart);
+        return "redirect:/books";
     }
 }

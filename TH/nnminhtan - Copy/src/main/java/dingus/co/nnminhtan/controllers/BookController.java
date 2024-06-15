@@ -134,4 +134,5 @@ public class BookController {
                 categoryService.getAllCategories());
         return "book/list";
     }
+
 }

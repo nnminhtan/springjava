@@ -1,3 +1,71 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <th:block th:replace="~{layout::link-css}"></th:block>-->
+<!--    <th:block th:replace="~{layout::custom-css}"></th:block>-->
+<!--    <title>Edit Book</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<th:block th:replace="~{layout::header}"></th:block>-->
+<!--<div class="container">-->
+<!--    <h1>Edit Book</h1>-->
+<!--    <form th:action="@{/books/edit}" th:object="${book}" method="post">-->
+<!--        <input type="hidden" name="_method" value="PUT">-->
+<!--        <input type="hidden" th:field="*{id}">-->
+<!--        <div class="col-6 mb-3">-->
+<!--            <label class="form-label" for="title">Title:</label>-->
+<!--            <input class="form-control" type="text" th:field="*{title}"-->
+<!--                   id="title" required autofocus>-->
+<!--            <span class="text-danger" th:if="${#fields.hasErrors('title')}"-->
+<!--                  th:errors="*{title}"></span>-->
+<!--        </div>-->
+<!--        <div class="col-6 mb-3">-->
+<!--            <label class="form-label" for="author">Author:</label>-->
+<!--            <input class="form-control" type="text" th:field="*{author}"-->
+<!--                   id="author">-->
+<!--            <span class="text-danger" th:if="${#fields.hasErrors('author')}"-->
+<!--                  th:errors="*{author}"></span>-->
+<!--        </div>-->
+<!--        <div class="col-6 mb-3">-->
+<!--            <label class="form-label" for="price">Price:</label>-->
+<!--            <input class="form-control" type="text" th:field="*{price}"-->
+<!--                   id="price">-->
+<!--            <span class="text-danger" th:if="${#fields.hasErrors('price')}"-->
+<!--                  th:errors="*{price}"></span>-->
+<!--        </div>-->
+<!--        <div class="col-6 mb-3">-->
+<!--            <label class="form-label" for="category">Category:</label><span-->
+<!--                class="text-danger">*</span>-->
+<!--            <select class="form-control" id="category" name="category.id">-->
+<!--                <option value="">&#45;&#45; Select Category &#45;&#45;</option>-->
+<!--                <option th:each="category : ${categories}"-->
+<!--                        th:value="${category.getId()}"-->
+<!--                        th:text="${category.getName()}"-->
+<!--                        th:selected="${category.getId() == book.category.getId()}"></option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--        <input type="submit" value="Save">-->
+<!--    </form>-->
+<!--    <br>-->
+<!--    <a th:href="@{/books}">Back to List</a>-->
+<!--</div>-->
+<!--<th:block th:replace="~{layout::footer}"></th:block>-->
+<!--<script>-->
+<!--    // Function to submit the form as a PUT request-->
+<!--    function submitFormAsPut() {-->
+<!--        var form = document.getElementById("editForm");-->
+<!--        var methodInput = document.getElementById("_method");-->
+<!--        methodInput.value = "PUT";-->
+<!--        form.submit();-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
@@ -13,45 +81,75 @@
 <div class="container">
     <h1>Edit Book</h1>
     <form th:action="@{/books/edit}" th:object="${book}" method="post">
-        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{id}" id="book-id">
         <div class="col-6 mb-3">
-            <label class="form-label" for="title">Title:</label>
+            <label class="form-label" for="book-title">Title:</label>
             <input class="form-control" type="text" th:field="*{title}"
-                   id="title" required autofocus>
+                   id="book-title" required autofocus>
             <span class="text-danger" th:if="${#fields.hasErrors('title')}"
                   th:errors="*{title}"></span>
         </div>
         <div class="col-6 mb-3">
-            <label class="form-label" for="author">Author:</label>
+            <label class="form-label" for="book-author">Author:</label>
             <input class="form-control" type="text" th:field="*{author}"
-                   id="author">
+                   id="book-author">
             <span class="text-danger" th:if="${#fields.hasErrors('author')}"
                   th:errors="*{author}"></span>
         </div>
         <div class="col-6 mb-3">
-            <label class="form-label" for="price">Price:</label>
+            <label class="form-label" for="book-price">Price:</label>
             <input class="form-control" type="text" th:field="*{price}"
-                   id="price">
+                   id="book-price">
             <span class="text-danger" th:if="${#fields.hasErrors('price')}"
                   th:errors="*{price}"></span>
         </div>
         <div class="col-6 mb-3">
-            <label class="form-label" for="category">Category:</label><span
+            <label class="form-label" for="book-category">Category:</label><span
                 class="text-danger">*</span>
-            <select class="form-control" id="category" name="category.id">
+            <select class="form-control" id="book-category" name="category.id">
                 <option value="">-- Select Category --</option>
                 <option th:each="category : ${categories}"
                         th:value="${category.getId()}"
                         th:text="${category.getName()}"
-                        th:selected="${category.getId() ==
-book.category.getId()}"></option>
+                        th:selected="${category.getId() == book.category.getId()}"></option>
             </select>
         </div>
-        <input type="submit" value="Save">
+        <input type="button" onclick="apiUpdateBook()" value="Save">
     </form>
     <br>
     <a th:href="@{/books}">Back to List</a>
 </div>
 <th:block th:replace="~{layout::footer}"></th:block>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script>
+    function apiUpdateBook() {
+        const id = $('#book-id').val();
+        const book = {
+            id: id,
+            title: $('#book-title').val(),
+            author: $('#book-author').val(),
+            price: $('#book-price').val(),
+            category: { id: $('#book-category').val() }
+        };
+        if (confirm('Are you sure you want to update book ' + id + '?')) {
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/books/' + id,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(book),
+                success: function () {
+                    console.log('Book updated successfully!');
+                    alert('Book updated successfully!');
+                    window.location.href = "/books"; // Redirect to book list page after successful update
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to update book:', xhr, status, error);
+                    alert('Failed to update book. Please try again.');
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>
+            }

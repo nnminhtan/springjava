@@ -23,27 +23,27 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="item : ${cart.cartItems}">
-            <td th:text="${item.getBookId()}"></td>
-            <td th:text="${item.getBookName()}"></td>
-            <td>
-                <label>
-                    <input type="number" min="1"
-                           th:value="${item.getQuantity()}"
-                           th:attr="data-id=${item.getBookId()}"
-                           class="form-control quantity">
-                </label>
-            </td>
-            <td th:text="${item.getPrice()}"></td>
-            <td th:text="${item.getPrice() * item.getQuantity()}"></td>
-            <td>
-                <a class="btn btn-danger"
-                   th:href="@{/cart/removeFromCart/{id}(id=${item.getBookId()})}">
-                    Remove
-                </a>
-            </td>
-        </tr>
-        </tbody>
+            <tr th:each="item : ${cart.cartItems}">
+                <td th:text="${item.getBookId()}"></td>
+                <td th:text="${item.getBookName()}"></td>
+                <td>
+                    <label>
+                        <input type="number" min="1"
+                               th:value="${item.getQuantity()}"
+                               th:attr="data-id=${item.getBookId()}"
+                               class="form-control quantity">
+                    </label>
+                </td>
+                <td th:text="${item.getPrice()}"></td>
+                <td th:text="${item.getPrice() * item.getQuantity()}"></td>
+                <td>
+                    <a class="btn btn-danger"
+                       th:href="@{/cart/removeFromCart/{id}(id=${item.getBookId()})}">
+                        Remove
+                    </a>
+                </td>
+            </tr>
+            </tbody>
     </table>
     <div class="row">
         <div class="col-md-12">
